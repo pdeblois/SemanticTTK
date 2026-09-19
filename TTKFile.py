@@ -30,8 +30,9 @@ class TTKFile:
         if csv_filepath:
             self.load(csv_filepath)
 
-    def _get_frame(self, frame_index):
+    def _get_frame(self, frame_num):
         """Fetches a frame's values, creating it with defaults if it doesn't exist."""
+        frame_index = frame_num - 1
         if frame_index not in self.frames:
             self.frames[frame_index] = self.INPUT_DEFAULTS.copy()
         return self.frames[frame_index]
@@ -86,12 +87,12 @@ class TTKFile:
     # RAW INPUT
     # ==========================================
 
-    def set_inputs_frame(self, frame_num, inputs):
+    def set_inputs_frame(self, inputs, frame_num):
         """
         Directly specify inputs for a single frame.
         Only modifies the keys passed in; leaves other inputs on that frame untouched.
         """
-        frame_data = self._get_frame(frame_num - 1)
+        frame_data = self._get_frame(frame_num)
         for key, value in inputs.items():
             if key in self.INPUT_RANGES:
                 min_val, max_val = self.INPUT_RANGES[key]
@@ -99,31 +100,18 @@ class TTKFile:
             else:
                 raise ValueError(f"Unknown input: {key}")
     
-    def set_inputs_frame_range(self, frame_range, inputs):
+    def set_inputs_frame_range(self, inputs, frame_range):
         """
         Directly specify inputs for a range of frames.
         Only modifies the keys passed in; leaves other inputs on that frame untouched.
         """
         for frame in range(frame_range[0], frame_range[1] + 1):
-            self.set_inputs_frame(frame, inputs)
+            self.set_inputs_frame(inputs, frame)
 
-    def set_inputs_duration(self, start_frame, duration, inputs):
+    def set_inputs_duration(self, inputs, start_frame, duration):
         """
         Directly specify inputs starting at a frame and lasting for a given duration.
         The start frame is included in the duration.
         Only modifies the keys passed in; leaves other inputs on that frame untouched.
         """
-        self.set_inputs_frame_range((start_frame, start_frame + duration - 1), inputs)
-
-    # ==========================================
-    # NAMED ACTIONS
-    # ==========================================
-
-    def accelerate(self, frame_range):
-        self.set_inputs_frame_range(frame_range, {'accelerate':1})
-
-    def turn(self, direction_value, start_frame, duration):
-        self.set_inputs_duration(start_frame, duration, {'h_stick':direction_value})
-
-    def wheelie(self, frame):
-        self.set_inputs_frame(frame, {'dpad':1})
+        self.set_inputs_frame_range(inputs, (start_frame, start_frame + duration - 1))
