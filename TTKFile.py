@@ -99,6 +99,7 @@ class TTKFile:
                 frame_data[key] = self._clamp(int(value), min_val, max_val)
             else:
                 raise ValueError(f"Unknown input: {key}")
+        return frame_num
     
     def set_inputs_frame_range(self, inputs, frame_range):
         """
@@ -107,6 +108,7 @@ class TTKFile:
         """
         for frame in range(frame_range[0], frame_range[1] + 1):
             self.set_inputs_frame(inputs, frame)
+        return frame_range[1]
 
     def set_inputs_duration(self, inputs, start_frame, duration):
         """
@@ -115,3 +117,4 @@ class TTKFile:
         Only modifies the keys passed in; leaves other inputs on that frame untouched.
         """
         self.set_inputs_frame_range(inputs, (start_frame, start_frame + duration - 1))
+        return start_frame + duration - 1
