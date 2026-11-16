@@ -32,6 +32,8 @@ class TTKFile:
 
     def _get_frame(self, frame_num):
         """Fetches a frame's values, creating it with defaults if it doesn't exist."""
+        if (frame_num < 1):
+            raise ValueError("Tried to fetch or create frame < 1")
         frame_index = frame_num - 1
         if frame_index not in self.frames:
             self.frames[frame_index] = self.INPUT_DEFAULTS.copy()
